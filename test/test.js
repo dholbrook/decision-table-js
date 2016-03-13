@@ -44,7 +44,7 @@ describe('decision-table-js', function() {
 
   });
 
-  it('should evaluate sparse actions and evaluate multipe actions', function() {
+  it('should evaluate sparse actions and evaluate multiple actions', function() {
 
     // from the wikipedia example https://en.wikipedia.org/wiki/Decision_table
 
