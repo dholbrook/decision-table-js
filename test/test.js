@@ -106,4 +106,75 @@ describe('decision-table-js', function() {
      []);
   });
 
+  it('should be able to evaluate equality between conditions and cell expressions', function() {
+
+    var table = {
+      conditions: [
+        ['destinationState',      '"CA"','"CA"','"NY"','"NY"','"TX"','"TX"'],
+        ['originState',           '"NY"','"TX"','"CA"','"TX"','"NY"','"CA"'],
+      ],
+      actions: [
+        ['"High Surcharge Rate"', 'X'   ,      ,'X'   ,      ,      ,    ],
+        ['"Low Surcharge Rate"',        ,'X'   ,      ,'X'   ,'X'   ,'X' ]
+      ]
+    };
+
+    var caToTx = decisionTable(table, {
+      X: true, /* true alias */
+      destinationState: 'TX',
+      originState: 'CA'
+    });
+    assert.deepEqual(caToTx,
+      ['Low Surcharge Rate']);
+
+    var nyToCa = decisionTable(table, {
+        X: true, /* true alias */
+        destinationState: 'CA',
+        originState: 'NY'
+      });
+      assert.deepEqual(nyToCa,
+        ['High Surcharge Rate']);
+
+  });
+
+  it('should be able to evaluate complex conditions', function() {
+
+    var table = {
+      conditions: [
+        ['destinationState === "CA"',      'Y','Y','N','N','N','N'],
+        ['destinationState === "TX"',      'N','N','N','N','Y','Y'],
+        ['destinationState === "NY"',      'N','N','Y','Y','N','N'],
+
+        ['originState === "CA"',           'N','N','Y','N','N','Y'],
+        ['originState === "TX"',           'N','Y','N','Y','N','N'],
+        ['originState === "NY"',           'Y','N','N','N','Y','N']
+      ],
+      actions: [
+        ['"High Surcharge Rate"',          'X',   ,'X',   ,   ,    ],
+        ['"Low Surcharge Rate"',              ,'X',   ,'X','X','X' ]
+      ]
+    };
+
+    var caToTx = decisionTable(table, {
+      Y: true, /* true alias */
+      N: false, /* true alias */
+      X: true, /* true alias */
+      destinationState: 'TX',
+      originState: 'CA'
+    });
+    assert.deepEqual(caToTx,
+      ['Low Surcharge Rate']);
+
+    var nyToCa = decisionTable(table, {
+        X: true, /* true alias */
+        Y: true, /* true alias */
+        N: false, /* false alias */
+        destinationState: 'CA',
+        originState: 'NY'
+      });
+      assert.deepEqual(nyToCa,
+        ['High Surcharge Rate']);
+
+  });
+
 });
